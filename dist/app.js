@@ -16,6 +16,7 @@ drawer.append(actions,management,stats);document.body.append(drawer);
 actions.hidden=true;
 const nav=el('nav',null,'drawer-nav');nav.setAttribute('aria-label','주 메뉴');
 for(const [title,action] of [['홈 · 나의 근무',()=>home.click()],['일정 등록',()=>openUpload('schedule')],['DIA 등록',()=>openUpload('reference')],['설정 · 백업',()=>{management.hidden=false;stats.hidden=false;actions.hidden=false;nav.hidden=true;}]] ){const b=el('button',title,'menu-item');b.onclick=action;nav.append(b);}heading.after(nav);
+const version=el('p','앱 버전 2026.10.22.5','muted'),updateApp=el('button','최신 버전 확인 · 새로고침','menu-item');nav.append(version,updateApp);updateApp.onclick=async()=>{updateApp.disabled=true;updateApp.textContent='업데이트 확인 중…';try{if(!navigator.onLine)throw Error('인터넷 연결을 확인해 주세요.');if('serviceWorker' in navigator){const reg=await navigator.serviceWorker.getRegistration();if(reg){await reg.update();if(reg.installing)await new Promise((resolve,reject)=>{const worker=reg.installing;worker.addEventListener('statechange',()=>{if(worker.state==='installed')resolve();if(worker.state==='redundant')reject(Error('업데이트를 다시 시도해 주세요.'));});});if(reg.waiting){navigator.serviceWorker.addEventListener('controllerchange',()=>location.reload(),{once:true});reg.waiting.postMessage({type:'SKIP_WAITING'});return;}}}location.reload();}catch(e){updateApp.disabled=false;updateApp.textContent=e.message;}};
 const upload=el('dialog');upload.id='uploadDialog';upload.setAttribute('aria-label','분석 파일 등록');
 const uploadHead=el('div',null,'dialog-heading'),uploadTitle=el('h2'),uploadClose=el('button','✕');uploadClose.setAttribute('aria-label','등록 닫기');uploadClose.onclick=()=>upload.close();uploadHead.append(uploadTitle,uploadClose);
 const uploadHelp=el('p',null,'muted'),effectiveLabel=el('label','앱에서 적용할 시작일 (사진에 없어도 됩니다)'),effective=el('input');effective.type='date';effectiveLabel.append(effective);
@@ -114,6 +115,7 @@ $('backup').onclick=async()=>{try{const next={...state,lastBackup:new Date().toI
 $('settings').onsubmit=async event=>{event.preventDefault();try{const f=event.currentTarget,holidays=f.elements.holidays.value.split(/\s+/).filter(Boolean);for(const d of holidays)if(!/^\d{4}-\d{2}-\d{2}$/.test(d)||isNaN(Date.parse(d))||new Date(d).toISOString().slice(0,10)!==d)throw Error('공휴일 날짜 형식을 확인해 주세요.');const next=structuredClone(state);next.settings={...next.settings,holiday_rule:f.elements.rule.value||null,holiday_dates:[...new Set(holidays)],daytime_start:f.elements.start.value||null,daytime_end:f.elements.end.value||null};await save(next);state=next;render();message('설정을 저장했습니다.');}catch(e){message(e.message);}};
 try{db=await openDB();state=await read()||emptyState();validate(state);render();}catch(e){message('기기 저장소를 사용할 수 없습니다. 브라우저 저장 권한을 확인해 주세요. '+e.message);for(const id of ['import','restore','backup'])$(id).disabled=true;}
 if('serviceWorker' in navigator)navigator.serviceWorker.register('./sw.js').catch(()=>message('오프라인 저장을 준비하지 못했습니다. 온라인에서는 사용할 수 있습니다.'));
+
 
 
 
