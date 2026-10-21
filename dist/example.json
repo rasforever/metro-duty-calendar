@@ -1,0 +1,13 @@
+{
+  "schema_version": "1.0",
+  "import_type": "combined",
+  "sources": [{"source_id":"example","kind":"mixed"}],
+  "settings": {"timezone":"Asia/Seoul","holiday_rule":"weekends_and_kr_public_holidays","daytime_start":null,"daytime_end":null},
+  "reference_tables": [{"reference_id":"demo","source_id":"example","printed_year":2026,"effective_from":"2026-10-01","entries":[{"dia":"1","day_type":"weekday","status":"active","start_time":"09:00","end_time":null,"end_day_offset":null},{"dia":"1","day_type":"holiday","status":"active","start_time":"10:00","end_time":null,"end_day_offset":null}]}],
+  "shifts": [
+    {"source_id":"example","date":"2026-10-22","dia_raw":"1","dia":"1","kind":"duty","distance_km":100,"printed_duration":"08:00","printed_minutes":480,"work_minutes":480,"linked_start_date":null,"reference_id":"demo"},
+    {"source_id":"example","date":"2026-10-23","dia_raw":"휴1","dia":null,"kind":"off","distance_km":0,"printed_duration":"00:00","printed_minutes":0,"work_minutes":0,"linked_start_date":null,"reference_id":null}
+  ],
+  "printed_totals": [],
+  "review_items": [{"source_id":"example","date":null,"dia":null,"field":"all","reason":"개발 확인용 가상 일정입니다. 실제 근무표가 아닙니다.","observed_text":null}]
+}

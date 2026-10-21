@@ -1,0 +1,5 @@
+node_modules/
+*.log
+private/
+crew-calendar-backup-*.json
+test-results/

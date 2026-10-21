@@ -1,0 +1,1 @@
+{"name":"crew-calendar","private":true,"type":"module","scripts":{"test":"node --test tests/core.test.mjs","preview":"node preview.mjs"}}
