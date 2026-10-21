@@ -40,6 +40,7 @@ drawer.addEventListener('click',e=>{if(e.target===drawer){const r=drawer.getBoun
 const hero=el('section',null,'panel hero'),heroTop=el('div',null,'hero-top'),selectedDate=el('h2');selectedDate.id='selectedDate';heroTop.append(selectedDate,$('today'));hero.append(heroTop,$('detail'));
 document.querySelector('.intro').replaceWith(hero);$('detail').className='';document.querySelector('aside').remove();
 document.querySelector('footer').textContent='예상 퇴근 = 출근 + 기록된 근무시간 + 휴게시간. 당일 퇴근은 1시간, 다음 날 퇴근은 6시간 30분을 추가합니다. 사용자 지정 잠정 기준이며 추후 변경될 수 있습니다. 기준표에 명시된 퇴근시각은 우선 적용합니다. 일정은 이 기기에 저장됩니다.';
+const footer=document.querySelector('footer'),footerInfo=el('details'),footerSummary=el('summary','계산 기준 · 저장 안내');footerInfo.append(footerSummary,el('p',footer.textContent));footer.replaceChildren(footerInfo);
 function message(s){$('status').textContent=s;uploadStatus.textContent=s;}
 function openDB(){return new Promise((resolve,reject)=>{const r=indexedDB.open('crew-calendar',1);r.onupgradeneeded=()=>r.result.createObjectStore('data');r.onsuccess=()=>resolve(r.result);r.onerror=()=>reject(r.error);});}
 function read(){return new Promise((resolve,reject)=>{const r=db.transaction('data').objectStore('data').get('state');r.onsuccess=()=>resolve(r.result);r.onerror=()=>reject(r.error);});}
@@ -68,15 +69,17 @@ function render(){
   detail.append(el('p',labels[s.kind]+' · '+s.dia_raw,'duty-label'));
   if(info.start){const times=el('div',null,'times');for(const [label,value] of [['출근',info.start],[(info.estimated?'예상 퇴근':'퇴근')+(info.offset===1?' · 다음 날':''),info.end||'미확인']]){const block=el('div',null,'time-block');block.append(el('span',label,'time-label'),el('span',value,'time-value'+(value==='미확인'?' unknown':'')));if(times.children.length)times.append(el('span','→','time-arrow'));times.append(block);}detail.append(times);}
   else detail.append(el('div',s.kind==='continuation'?'전날 근무의 퇴근일':labels[s.kind],'bigtime'));
-  if(info.offset===1)detail.append(el('p','퇴근은 다음 날입니다.','muted'));
-  if(info.end&&info.offset==null&&s.kind!=='daytime')detail.append(el('p','퇴근 날짜 확인 필요','warning'));
-  detail.append(el('p',`기록된 근무시간 ${duration(s.work_minutes)} · 주행거리 ${s.distance_km==null?'미확인':s.distance_km+' km'}`,'hero-note'));
-  if(s.linked_start_date)detail.append(row('이어지는 근무',s.linked_start_date));
-  if(info.note)detail.append(el('p',info.note,'warning'));
-  if(info.estimated)detail.append(el('p',`예상 퇴근 · 휴게 ${duration(info.restMinutes)} 추가 (잠정 기준)`,'muted'));
-  if(info.continued)detail.append(el('p',`출근일 ${info.startDate} · 전날 근무에서 계산한 퇴근시각`,'muted'));
-  if(s.kind==='duty'&&!info.end)detail.append(el('p','출근시각과 근무시간이 확인되면 예상 퇴근을 계산합니다.','muted'));
-  for(const r of state.review_items.filter(r=>r.date===selected||(!r.date&&r.source_id===s.source_id)))detail.append(el('p',String(r.reason||'원본 확인 필요'),'warning'));
+  const extra=el('details',null,'shift-extra');extra.append(el('summary','근무 상세 · 계산 기준'));
+  if(info.offset===1)extra.append(el('p','퇴근은 다음 날입니다.','muted'));
+  if(info.end&&info.offset==null&&s.kind!=='daytime')extra.append(el('p','퇴근 날짜 확인 필요','warning'));
+  extra.append(el('p',`기록된 근무시간 ${duration(s.work_minutes)} · 주행거리 ${s.distance_km==null?'미확인':s.distance_km+' km'}`,'hero-note'));
+  if(s.linked_start_date)extra.append(row('이어지는 근무',s.linked_start_date));
+  if(info.note)extra.append(el('p',info.note,'warning'));
+  if(info.estimated)extra.append(el('p',`예상 퇴근 · 휴게 ${duration(info.restMinutes)} 추가 (잠정 기준)`,'muted'));
+  if(info.continued)extra.append(el('p',`출근일 ${info.startDate} · 전날 근무에서 계산한 퇴근시각`,'muted'));
+  if(s.kind==='duty'&&!info.end)extra.append(el('p','출근시각과 근무시간이 확인되면 예상 퇴근을 계산합니다.','muted'));
+  for(const r of state.review_items.filter(r=>r.date===selected||(!r.date&&r.source_id===s.source_id)))extra.append(el('p',String(r.reason||'원본 확인 필요'),'warning'));
+  detail.append(extra);
  }
  const list=state.shifts.filter(s=>s.date.startsWith(month));
  $('summary').replaceChildren(el('p',`${list.length}일 등록`,'stat'),el('p',duration(list.reduce((sum,s)=>sum+(s.kind==='continuation'?0:s.work_minutes||0),0)),'stat'),el('p',`${list.reduce((sum,s)=>sum+(s.kind==='continuation'?0:s.distance_km||0),0).toFixed(1)} km`,'muted'),el('p','등록된 일정 기준 · 미확인 값 제외','muted'));
@@ -110,6 +113,8 @@ $('backup').onclick=async()=>{try{const next={...state,lastBackup:new Date().toI
 $('settings').onsubmit=async event=>{event.preventDefault();try{const f=event.currentTarget,holidays=f.elements.holidays.value.split(/\s+/).filter(Boolean);for(const d of holidays)if(!/^\d{4}-\d{2}-\d{2}$/.test(d)||isNaN(Date.parse(d))||new Date(d).toISOString().slice(0,10)!==d)throw Error('공휴일 날짜 형식을 확인해 주세요.');const next=structuredClone(state);next.settings={...next.settings,holiday_rule:f.elements.rule.value||null,holiday_dates:[...new Set(holidays)],daytime_start:f.elements.start.value||null,daytime_end:f.elements.end.value||null};await save(next);state=next;render();message('설정을 저장했습니다.');}catch(e){message(e.message);}};
 try{db=await openDB();state=await read()||emptyState();validate(state);render();}catch(e){message('기기 저장소를 사용할 수 없습니다. 브라우저 저장 권한을 확인해 주세요. '+e.message);for(const id of ['import','restore','backup'])$(id).disabled=true;}
 if('serviceWorker' in navigator)navigator.serviceWorker.register('./sw.js').catch(()=>message('오프라인 저장을 준비하지 못했습니다. 온라인에서는 사용할 수 있습니다.'));
+
+
 
 
 
