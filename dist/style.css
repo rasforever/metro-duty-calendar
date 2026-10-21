@@ -8,3 +8,32 @@ main{padding-top:max(14px,env(safe-area-inset-top));padding-bottom:max(12px,env(
 @media(max-width:480px){main{padding:10px 12px max(10px,env(safe-area-inset-bottom))}header{margin-bottom:10px;gap:10px}.brand{font-size:21px}.menu-button,.home-button{min-height:44px;height:44px}.hero{padding:16px 18px;margin-bottom:10px;border-radius:22px}.hero-top{margin-bottom:12px}.hero-top h2{font-size:16px}.hero-top button{padding:6px 12px}.time-value{font-size:32px}.calendar{padding:14px 12px;border-radius:22px}.monthbar h2{font-size:19px}.monthbar button{font-size:26px}.week{font-size:12px;margin:10px 0 4px}#grid{gap:2px}.num{font-size:16px}.badge{font-size:10px}.day{border-radius:13px}.bigtime{font-size:26px;margin:10px 0}.hero-note{padding-top:10px;font-size:12px}.legend{gap:10px}main>footer{line-height:1.5}}
 @media(max-width:480px){.hero-top{margin-bottom:6px}.hero-top button{min-height:36px}.duty-label{margin:4px 0;font-size:14px;line-height:1.4}.times{margin:8px 0 4px}.time-label{font-size:12px}.time-value{font-size:30px}.hero{padding:12px 18px}.shift-extra summary{min-height:28px;padding:6px 0}.calendar{padding:10px 12px}.day,.empty{height:44px;min-height:44px}.day{gap:2px;padding:3px 1px}.week{margin:6px 0 4px}.legend{margin-top:6px}main>footer details{margin:0;padding:0;border:0}main>footer summary{font-size:11px;min-height:28px;padding:6px}main>footer{margin-top:4px}}
 .return-time{margin:10px 0 12px}.return-time .time-value{display:block}
+/* Light appearance retains semantic duty colors and the compact layout. */
+:root[data-theme=light]{color-scheme:light;background:#f1f5fb;color:#182b44}
+[data-theme=light] .brand{color:#234e83}
+[data-theme=light] button{color:#203c60;background:#e4ecf7;border-color:#bdcce0}
+[data-theme=light] button:hover{background:#d5e3f5}
+[data-theme=light] .home-button,[data-theme=light] .monthbar button,[data-theme=light] .dialog-heading button,[data-theme=light] .day{background:transparent}
+[data-theme=light] .menu-button span{background:#345479}
+[data-theme=light] .panel,[data-theme=light] dialog{background:#fff;color:#182b44;border-color:#c4d2e4}
+[data-theme=light] .hero{background:#dae7f8}
+[data-theme=light] .hero-top button{background:#ffffff70;border-color:#9eb6d5;color:#26466c}
+[data-theme=light] .duty-label,[data-theme=light] .time-label,[data-theme=light] .hero-note,[data-theme=light] .shift-extra summary,[data-theme=light] .detailrow span:first-child{color:#425e80}
+[data-theme=light] .time-arrow{color:#577395}
+[data-theme=light] .muted,[data-theme=light] .week,[data-theme=light] .legend,[data-theme=light] footer,[data-theme=light] label{color:#52657d}
+[data-theme=light] .warning,[data-theme=light] #status{color:#875117}
+[data-theme=light] .hero-note,[data-theme=light] details,[data-theme=light] .detailrow{border-color:#bfcee1}
+[data-theme=light] .day:hover{background:#e9f0fa}
+[data-theme=light] .day.selected{background:#c3d8f5;color:#163c6b}
+[data-theme=light] .day.today:before{background:#2e62a7}
+[data-theme=light] .badge{background:#deebfc;color:#285386}
+[data-theme=light] .badge.off,[data-theme=light] .badge.cancelled{background:#daf0e7;color:#28634e}
+[data-theme=light] .badge.night{background:#eae0f6;color:#64418a}
+[data-theme=light] .badge.continuation{background:#e5e9ef;color:#505e70}
+[data-theme=light] input,[data-theme=light] textarea,[data-theme=light] select{background:#f8faff;color:#20354f;border-color:#aebfd5}
+[data-theme=light] .primary{background:#2c5e9f;color:#fff;border-color:transparent}
+[data-theme=light] .primary:hover{background:#234d83}
+[data-theme=light] .menu-item{background:#eaf1fa}
+[data-theme=light] dialog::backdrop{background:#24395766}
+[data-theme=light] :focus-visible{outline-color:#285ea5}
+[data-theme=light] .day{border-color:transparent}
